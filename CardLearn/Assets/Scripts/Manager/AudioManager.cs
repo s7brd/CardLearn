@@ -39,7 +39,7 @@ public class AudioManager : MonoBehaviour
     //播放音效
     public void PlayEffect(string name)
     {
-        AudioClip clip = Resources.Load<AudioClip>("Sounds/Effect" + name);
+        AudioClip clip = Resources.Load<AudioClip>("Sounds/" + name);
         AudioSource.PlayClipAtPoint(clip, transform.position); //播放
     }
 }
