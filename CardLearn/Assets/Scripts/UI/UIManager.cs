@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+using UnityEngine.UI;
 
 //ui管理器
 public class UIManager : MonoBehaviour
@@ -91,5 +93,58 @@ public class UIManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    //获得某个界面的脚本
+    public T GetUI<T>(string uiName) where T : UIBase //rrjw 后面研究下相关用法
+    {
+        UIBase ui = Find(uiName);
+        if (ui != null)
+        {
+            return ui.GetComponent<T>();
+        }
+
+        return null;
+    }
+
+    //创建敌人头部
+    public GameObject CreateActionIcon()
+    {
+        GameObject obj = Instantiate(Resources.Load("UI/actionIcon"), canvasTf) as GameObject;
+        obj.transform.SetAsFirstSibling(); //设置在父级的最后一位
+        return obj;
+    }
+    
+    //创建敌人底部的血量物体
+    public GameObject CreateHpItem()
+    {
+        GameObject obj = Instantiate(Resources.Load("UI/HpItem"), canvasTf) as GameObject;
+        obj.transform.SetAsFirstSibling(); //设置在父级的最后一位
+        return obj;
+    }
+    
+    //提示界面
+    public void ShowTip(string msg, Color color, System.Action callback = null)
+    {
+        //rrjw 可以优化成固定在那里的
+        GameObject obj = Instantiate(Resources.Load("UI/Tips"), canvasTf) as GameObject;
+        Text text = obj.transform.Find("bg/Text").GetComponent<Text>();
+        text.color = color;
+        text.text = msg;
+        Tween scale1 = obj.transform.Find("bg").DOScaleY(1, 0.2f);
+        Tween scale2 = obj.transform.Find("bg").DOScaleY(0, 0.2f);
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(scale1);
+        seq.AppendInterval(0.5f);
+        seq.Append(scale2);
+        seq.AppendCallback(delegate
+        {
+            if (callback != null)
+            {
+                callback();
+            }
+            MonoBehaviour.Destroy(obj);
+        });
     }
 }

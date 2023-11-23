@@ -24,9 +24,25 @@ public class FightManager : MonoBehaviour
 
     public FightUnit fightUnit; //战斗单元
 
+    public int MaxHp;//最大血量
+    public int curHp;//当前血量
+
+    public int MaxPowerCount;  //最大能量(卡牌使用会消耗能量)
+    public int CurPowerCount;  //当前能量
+    public int DefenseCount;   //防御值
+    
     private void Awake()
     {
         Instance = this;
+    }
+
+    public void Init()
+    {
+        MaxHp = 10;
+        curHp = 10;
+        MaxPowerCount = 3;
+        CurPowerCount = 3;
+        DefenseCount = 10; 
     }
 
     //切换战斗类型
