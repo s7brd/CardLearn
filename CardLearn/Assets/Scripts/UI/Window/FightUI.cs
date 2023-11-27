@@ -120,7 +120,7 @@ public class FightUI : UIBase
         //刷新卡牌位置
         UpdateCardItemPos();
         
-        //卡牌移到效果
+        //卡牌移到弃牌堆效果
         item.GetComponent<RectTransform>().DOAnchorPos(new Vector2(1000, -700), 0.25f);
         item.transform.DOScale(0, 0.25f);
         

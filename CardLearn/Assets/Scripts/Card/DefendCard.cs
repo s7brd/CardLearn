@@ -28,7 +28,7 @@ public class DefendCard : CardItem
             PlayEffect(pos);
         }else
         {
-            
+            base.OnEndDrag(eventData);
         }
     }
 }

@@ -35,6 +35,9 @@ public class Enemy : MonoBehaviour
     public int MaxHp;
     public int CurHp;
     
+    //组件相关
+    private SkinnedMeshRenderer _meshRenderer;
+    
     public void Init(Dictionary<string, string> data)
     {
         this.data = data;
@@ -42,6 +45,8 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        _meshRenderer = transform.GetComponentInChildren<SkinnedMeshRenderer>();
+        
         type = ActionType.None;
         hpItemObj = UIManager.Instance.CreateHpItem();
         actionObj = UIManager.Instance.CreateActionIcon();
@@ -101,4 +106,19 @@ public class Enemy : MonoBehaviour
     {
         defendTxt.text = Defend.ToString();
     }
+
+    /// <summary>
+    /// 被攻击卡选中,显示红边
+    /// </summary>
+    public void OnSelect()
+    {
+        //rrjw:从shader中找到属性来修改
+        _meshRenderer.material.SetColor("_OtlColor", Color.red);
+    }
+    
+    public void OnUnSelect()
+    {
+        _meshRenderer.material.SetColor("_OtlColor", Color.black);
+    }
+        
 }
