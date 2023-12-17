@@ -9,11 +9,7 @@ public class Fight_Win : FightUnit
 {
     public override void Init()
     {
-        base.Init();
-    }
-
-    public override void OnUpdate()
-    {
-        base.OnUpdate();
+        Debug.Log("游戏胜利");
+        //可以显示结算界面 预制体有了 能看到这里的小伙伴 应该可以自己补上了
     }
 }

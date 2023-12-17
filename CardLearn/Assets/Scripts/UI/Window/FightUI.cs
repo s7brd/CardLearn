@@ -27,6 +27,17 @@ public class FightUI : UIBase
         hpTxt = transform.Find("hp/moneyTxt").GetComponent<Text>();
         hpImage = transform.Find("hp/fill").GetComponent<Image>();
         fyTxt = transform.Find("hp/fangyu/Text").GetComponent<Text>();
+        transform.Find("turnBtn").GetComponent<Button>().onClick.AddListener(OnChangeTurnBtn);
+    }
+
+    //玩家回合结束,切换到敌人回合
+    private void OnChangeTurnBtn()
+    {
+        //只有玩家回合才能切换
+        if (FightManager.Instance.fightUnit is Fight_PlayerTurn)
+        {
+            FightManager.Instance.ChangeType(FightType.Enemy);
+        }
     }
 
     private void Start()
@@ -41,8 +52,8 @@ public class FightUI : UIBase
     //更新血量显示
     public void UpdateHp()
     {
-        hpTxt.text = FightManager.Instance.curHp + "/" + FightManager.Instance.MaxHp;
-        hpImage.fillAmount = (float)FightManager.Instance.curHp / (float)FightManager.Instance.MaxHp;
+        hpTxt.text = FightManager.Instance.CurHp + "/" + FightManager.Instance.MaxHp;
+        hpImage.fillAmount = (float)FightManager.Instance.CurHp / (float)FightManager.Instance.MaxHp;
     }
     
     //更新能量
@@ -86,6 +97,8 @@ public class FightUI : UIBase
             CardItem item = obj.AddComponent(System.Type.GetType(data["Script"])) as CardItem;
             item.Init(data);
             cardItemList.Add(item);
+            //更新卡堆数量
+            UpdateCardCount();
         }
     }
     
@@ -112,7 +125,7 @@ public class FightUI : UIBase
         FightCardManager.Instance.usedCardList.Add(item.data["Id"]);
         
         //更新使用后的卡牌数量
-        cardCountTxt.text = FightCardManager.Instance.usedCardList.Count.ToString();
+        UpdateUsedCardCount();
         
         //从集合中删除
         cardItemList.Remove(item);
@@ -125,5 +138,14 @@ public class FightUI : UIBase
         item.transform.DOScale(0, 0.25f);
         
         Destroy(item.gameObject, 1);
+    }
+
+    //删除所有卡牌
+    public void RemoveAllCards()
+    {
+        for (int i = cardItemList.Count - 1; i >= 0; i--)
+        {
+            RemoveCard((cardItemList[i]));
+        }
     }
 }

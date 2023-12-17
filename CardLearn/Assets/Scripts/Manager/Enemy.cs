@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 //敌人的行动枚举
 public enum ActionType
@@ -37,6 +38,7 @@ public class Enemy : MonoBehaviour
     
     //组件相关
     private SkinnedMeshRenderer _meshRenderer;
+    public Animator ani;
     
     public void Init(Dictionary<string, string> data)
     {
@@ -46,6 +48,7 @@ public class Enemy : MonoBehaviour
     private void Start()
     {
         _meshRenderer = transform.GetComponentInChildren<SkinnedMeshRenderer>();
+        ani = transform.GetComponent<Animator>();
         
         type = ActionType.None;
         hpItemObj = UIManager.Instance.CreateHpItem();
@@ -119,6 +122,90 @@ public class Enemy : MonoBehaviour
     public void OnUnSelect()
     {
         _meshRenderer.material.SetColor("_OtlColor", Color.black);
+    }
+
+    //受伤
+    public void Hit(int val)
+    {
+        //先扣护盾
+        if (Defend > val)
+        {
+            //扣护盾
+            Defend -= val;
+            
+            //播放受伤
+            ani.Play("hit", 0, 0);
+        }
+        else
+        {
+            val = val - Defend;
+            Defend = 0;
+            CurHp -= val;
+            if (CurHp <= 0)
+            {
+                CurHp = 0;
+                //播放死亡
+                ani.Play("die");
+                
+                //敌人从列表中移除
+                EnemyManager.Instance.DeletEnemy(this);
+
+                Destroy(gameObject, 1);
+                Destroy(actionObj);
+                Destroy(hpItemObj);
+            }
+            else
+            {
+                //受伤
+                ani.Play("hit", 0, 0);
+            }
+        }
+        
+        //刷新血量等ui
+        UpdateDefend();
+        UpdateHp();
+    }
+
+    //隐藏怪物头上的行动标志
+    public void HideAction()
+    {
+        attackTf.gameObject.SetActive(false);
+        defendTf.gameObject.SetActive(false);
+    }
+
+    //执行敌人行动 rrjw Ienumerable ienumerator 研究下
+    public IEnumerator DoAction()
+    {
+        HideAction();
+        
+        //播放对应的动画(可以配置到excel表 这里都默认播放攻击)
+        ani.Play("attack");
+        //等待某一时间的后执行对应的行为(也可以配置到excel表)
+        yield return new WaitForSeconds(0.5f); //这里我写死了
+
+        switch (type)
+        {
+            case ActionType.None:
+                break;
+            case ActionType.Defend:
+                //加防御
+                Defend += 1;
+                UpdateDefend();
+                //可以播放对应的特效
+                break;
+            case ActionType.Attack:
+                //玩家扣血
+                FightManager.Instance.GetPlayerHit(Attack);
+                
+                //摄像机可以抖一抖
+                Camera.main.DOShakePosition(0.1f, 0.2f, 5, 45);
+                break;
+        }
+        
+        //等待动画播放完(这里的时长也可以配置)
+        yield return new WaitForSeconds(1);
+        //播放待机
+        ani.Play("idle");
     }
         
 }

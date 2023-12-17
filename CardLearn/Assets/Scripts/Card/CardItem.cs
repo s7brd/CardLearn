@@ -52,7 +52,7 @@ public class CardItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private Vector2 initPos; //拖拽开始时记录卡牌的 位置
     //开始拖拽
-    public void OnBeginDrag(PointerEventData eventData)
+    public virtual void OnBeginDrag(PointerEventData eventData)
     {
         initPos = transform.GetComponent<RectTransform>().anchoredPosition;
         
@@ -61,7 +61,7 @@ public class CardItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
 
     //拖拽中
-    public void OnDrag(PointerEventData eventData)
+    public virtual void OnDrag(PointerEventData eventData)
     {
         Vector2 pos;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -89,7 +89,7 @@ public class CardItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (cost > FightManager.Instance.CurPowerCount)
         {
             //费用不足
-            AudioManager.Instance.PlayEffect("Effect/loss"); //使用失败音效
+            AudioManager.Instance.PlayEffect("Effect/lose"); //使用失败音效
             
             //提示
             UIManager.Instance.ShowTip("费用不足", Color.red);

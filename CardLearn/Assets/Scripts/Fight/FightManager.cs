@@ -25,7 +25,7 @@ public class FightManager : MonoBehaviour
     public FightUnit fightUnit; //战斗单元
 
     public int MaxHp;//最大血量
-    public int curHp;//当前血量
+    public int CurHp;//当前血量
 
     public int MaxPowerCount;  //最大能量(卡牌使用会消耗能量)
     public int CurPowerCount;  //当前能量
@@ -39,7 +39,7 @@ public class FightManager : MonoBehaviour
     public void Init()
     {
         MaxHp = 10;
-        curHp = 10;
+        CurHp = 10;
         MaxPowerCount = 3;
         CurPowerCount = 3;
         DefenseCount = 10; 
@@ -69,6 +69,32 @@ public class FightManager : MonoBehaviour
                 break;
         }
         fightUnit.Init();
+    }
+
+    //玩家受伤逻辑
+    public void GetPlayerHit(int hit)
+    {
+        //扣护盾
+        if (DefenseCount >= hit)
+        {
+            DefenseCount -= hit;
+        }
+        else
+        {
+            hit = hit - DefenseCount;
+            DefenseCount = 0;
+            CurHp -= hit;
+            if (CurHp <= 0)
+            {
+                CurHp = 0;
+                //切换到游戏失败状态
+                ChangeType(FightType.Loss);
+            }
+        }
+        
+        //更新界面 rrjw 毫无疑问,事件更好,如果再扣魔呢?
+        UIManager.Instance.GetUI<FightUI>("FightUI").UpdateHp();
+        UIManager.Instance.GetUI<FightUI>("FightUI").UpdateDefense();
     }
 
     private void Update()
